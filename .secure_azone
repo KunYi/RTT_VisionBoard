@@ -154,5 +154,11 @@
             <slot name="PB06" secure="true"/>
             <slot name="PB07" secure="true"/>
         </peripheral>
+        <peripheral name="ICU">
+            <slot name="IRQ0" secure="true"/>
+            <slot name="IRQ1" secure="true"/>
+            <slot name="IRQ2" secure="true"/>
+            <slot name="IRQ3" secure="true"/>
+        </peripheral>
     </partition>
 </azone>

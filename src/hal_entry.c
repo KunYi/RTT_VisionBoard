@@ -30,17 +30,22 @@ void setLED(const bsp_io_port_pin_t pin, const bsp_io_level_t state) {
  **********************************************************************************************************************/
 void hal_entry(void)
 {
+    R_SCI_B_UART_Open(&g_uart0_ctrl, &g_uart0_cfg);
+
     /* TODO: add your own code here */
     while(1) {
         setLED(LED_GREEN, LED_ON);
+        R_SCI_B_UART_Write(&g_uart0_ctrl, (uint8_t const *)"G-LED\r\n", 7);
         R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
 
         setLED(LED_GREEN, LED_OFF);
         setLED(LED_RED, LED_ON);
+        R_SCI_B_UART_Write(&g_uart0_ctrl, (uint8_t const *)"R-LED\r\n", 7);
         R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
 
         setLED(LED_RED, LED_OFF);
         setLED(LED_BLUE, LED_ON);
+        R_SCI_B_UART_Write(&g_uart0_ctrl, (uint8_t const *)"B-LED\r\n", 7);
         R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
 
         setLED(LED_BLUE, LED_OFF);
