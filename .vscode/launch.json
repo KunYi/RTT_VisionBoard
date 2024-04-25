@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    // {
+    //   "type": "renesas",
+    //   "request": "launch",
+    //   "name": "Renesas GDB Debugging",
+    //   "target": {
+    //     "debuggerType": "SEGGERJLINKARM",
+    //     "deviceFamily": "RA",
+    //     "device": "R7FA8D1BH"
+    //   }
+    // },
+    {
+	    "name": "Debug-RTT-VisionBoard",
+	    "cwd": "${workspaceRoot}",
+	    "executable": "build/RTT_VisonBoard.elf",
+	    "request": "launch",
+	    "type": "cortex-debug",
+	    // pyocd config
+	    "servertype": "pyocd",
+	    "targetId": "r7fa8d1bh",
+	    // end of pyocd config
+	    "gdbPath": "/usr/bin/gdb-multiarch",
+	    "runToEntryPoint": "main",
+	    "device": "R7FA8D1BH",
+	    "svdFile": "SVD/R7FA8D1BH.svd",
+	    "liveWatch": {
+		      "enabled": false,
+		      "samplesPerSecond": 4
+	    },
+	    "showDevDebugOutput": "none"
+	}
+  ]
+}

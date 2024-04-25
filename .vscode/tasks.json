@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "cmake",
+      "command": "build",
+      "group": "none",
+      "label": "FSP Smart Configurator",
+      "detail": "Edit configuration in FSP Smart Configurator",
+      "targets": [
+        "rasc"
+      ],
+      "presentation": {
+        "clear": false,
+        "panel": "shared",
+        "echo": false,
+        "focus": false,
+        "reveal": "silent",
+        "showReuseMessage": false
+      }
+    },
+    {
+      "type": "shell",
+      "command": "cmake -P cmake/prebuild.cmake",
+      "group": "build",
+      "label": "Regenerate project content"
+    },
+    {
+      "type": "renesas-build",
+      "command": "build",
+      "group": "build",
+      "label": "FSP Smart Configurator",
+      "deviceFamily": "RA",
+      "toolchain": "gcc"
+    }
+  ]
+}
