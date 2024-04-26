@@ -9,8 +9,82 @@ FSP_CPP_FOOTER
 #define LED_RED     LED2
 #define LED_ON      BSP_IO_LEVEL_LOW
 #define LED_OFF     BSP_IO_LEVEL_HIGH
+
 #define USB_HS_SEL  BSP_IO_LEVEL_HIGH
 #define USB_FS_SEL  BSP_IO_LEVEL_LOW
+
+#define USB_APL_YES                   (1U)
+#define USB_APL_NO                    (0U)
+#define APL_NUM_USB_EVENT             (10U)
+#define DATA_LEN                      (8U)
+#define LINE_CODING_LENGTH            (0x07U)
+#define APL_USE_BAREMETAL_CALLBACK    USB_APL_YES
+
+/******************************************************************************
+ * Private global variables and functions
+ ******************************************************************************/
+extern const usb_cfg_t g_basic0_cfg;
+static uint8_t               g_buf[DATA_LEN];
+static usb_pcdc_linecoding_t g_line_coding;
+extern uint8_t   g_apl_device[];
+extern uint8_t   g_apl_configuration[];
+extern uint8_t   g_apl_hs_configuration[];
+extern uint8_t   g_apl_qualifier_descriptor[];
+extern uint8_t * g_apl_string_table[];
+extern usb_instance_ctrl_t g_basic0_ctrl;
+
+#if (BSP_CFG_RTOS == 2)
+QueueHandle_t g_apl_mbx_hdl;
+#endif                                 /* (BSP_CFG_RTOS == 2) */
+#if (BSP_CFG_RTOS == 0) && (APL_USE_BAREMETAL_CALLBACK == USB_YES)
+usb_callback_args_t g_apl_usb_event;
+usb_callback_args_t g_apl_usb_event_buf[APL_NUM_USB_EVENT];
+uint8_t             g_apl_usb_event_wp = 0;
+uint8_t             g_apl_usb_event_rp = 0;
+#endif  /* (BSP_CFG_RTOS == 0) && (APL_USE_BAREMETAL_CALLBACK == USB_YES) */
+
+/******************************************************************************
+ * Exported global functions (to be accessed by other files)
+ ******************************************************************************/
+#if (BSP_CFG_RTOS == 0) && (APL_USE_BAREMETAL_CALLBACK == USB_YES)
+void usb_apl_callback(usb_callback_args_t * p_event);
+#endif
+#if (BSP_CFG_RTOS == 2)
+void usb_apl_callback(usb_event_info_t * p_api_event, usb_hdl_t cur_task, usb_onoff_t usb_state);
+#endif
+/******************************************************************************
+ * Renesas Peripheral Communications Devices Class Sample Code functions
+ ******************************************************************************/
+#if (BSP_CFG_RTOS == 2)
+/******************************************************************************
+ * Function Name   : usb_apl_callback
+ * Description     : Callback function for Application program
+ * Arguments       : usb_event_info_t *p_api_event    : Control structure for USB API.
+ *               : usb_hdl_t        cur_task        : Task Handle
+ *               : uint8_t          usb_state       : USB_ON(USB_STATUS_REQUEST) / USB_OFF
+ * Return value    : none
+ ******************************************************************************/
+void usb_apl_callback (usb_event_info_t * p_api_event, usb_hdl_t cur_task, usb_onoff_t usb_state)
+{
+    (void) usb_state;
+    (void) cur_task;
+    xQueueSend(g_apl_mbx_hdl, (const void *) &p_api_event, (TickType_t) (0));
+}                                      /* End of function usb_apl_callback */
+#endif /* (BSP_CFG_RTOS == 2) */
+/******************************************************************************
+ * Function Name   : usb_apl_callback
+ * Description     : Callback function for Application program
+ * Arguments       : usb_callback_args_t * p_event    : Pointer to usb_callback_args_t structure
+ * Return value    : none
+ ******************************************************************************/
+#if (BSP_CFG_RTOS == 0) && (APL_USE_BAREMETAL_CALLBACK == USB_YES)
+void usb_apl_callback (usb_callback_args_t * p_event)
+{
+    g_apl_usb_event_buf[g_apl_usb_event_wp] = *p_event;
+    g_apl_usb_event_wp++;
+    g_apl_usb_event_wp %= APL_NUM_USB_EVENT;
+}
+#endif                                 /* (BSP_CFG_RTOS == 0) && (APL_USE_BAREMETAL_CALLBACK == USB_YES) */
 
 void setLED(const bsp_io_port_pin_t pin, const bsp_io_level_t state);
 
@@ -32,26 +106,98 @@ void setLED(const bsp_io_port_pin_t pin, const bsp_io_level_t state) {
  **********************************************************************************************************************/
 void hal_entry(void)
 {
+    usb_event_info_t event_info;
+    usb_status_t     event = USB_STATUS_POWERED;
+
+    /* switch to USB Full speed */
+    R_BSP_PinAccessEnable();
+    R_BSP_PinWrite(USB_CH_SEL, USB_FS_SEL);
+    R_BSP_PinAccessDisable();
+    R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
+
+#if (BSP_CFG_RTOS == 2)
+    usb_event_info_t * p_mess;
+#endif
+    g_usb_on_usb.open(&g_basic0_ctrl, &g_basic0_cfg);
+#if (BSP_CFG_RTOS == 0) && (APL_USE_BAREMETAL_CALLBACK == USB_YES)
+    g_usb_on_usb.callbackMemorySet(&g_basic0_ctrl, &g_apl_usb_event);
+#endif
+
     R_SCI_B_UART_Open(&g_uart0_ctrl, &g_uart0_cfg);
 
     /* TODO: add your own code here */
     while(1) {
-        setLED(LED_GREEN, LED_ON);
-        R_SCI_B_UART_Write(&g_uart0_ctrl, (uint8_t const *)"G-LED\r\n", 7);
-        R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
+#if (BSP_CFG_RTOS == 2)                /* FreeRTOS */
+        xQueueReceive(g_apl_mbx_hdl, (void *) &p_mess, portMAX_DELAY);
+        event_info = *p_mess;
+        event      = event_info.event;
+#else                                  /* (BSP_CFG_RTOS == 2) */
+ #if (APL_USE_BAREMETAL_CALLBACK == USB_YES)
+        g_usb_on_usb.driverActivate(&g_basic0_ctrl);
+        if (g_apl_usb_event_wp != g_apl_usb_event_rp)
+        {
+            event_info = g_apl_usb_event_buf[g_apl_usb_event_rp];
+            g_apl_usb_event_rp++;
+            g_apl_usb_event_rp %= APL_NUM_USB_EVENT;
+            event = event_info.event;
+        }
+ #else                                 /* (APL_USE_BAREMETAL_CALLBACK == USB_YES) */
+        /* Get USB event data */
+        g_usb_on_usb.eventGet(&event_info, &event);
+ #endif
+#endif
+        /* Handle the received event (if any) */
+        switch (event)
+        {
+            case USB_STATUS_CONFIGURED:
+            case USB_STATUS_WRITE_COMPLETE:
+                /* Initialization complete; get data from host */
+                g_usb_on_usb.read(&g_basic0_ctrl, g_buf, DATA_LEN, USB_CLASS_PCDC);
+                break;
+            case USB_STATUS_READ_COMPLETE:
+                /* Loop back received data to host */
+                g_usb_on_usb.write(&g_basic0_ctrl, g_buf, event_info.data_size, USB_CLASS_PCDC);
+                break;
+            case USB_STATUS_REQUEST:   /* Receive Class Request */
+                if (USB_PCDC_SET_LINE_CODING == (event_info.setup.request_type & USB_BREQUEST))
+                {
+                    /* Configure virtual UART settings */
+                    g_usb_on_usb.periControlDataGet(&g_basic0_ctrl, (uint8_t *) &g_line_coding, LINE_CODING_LENGTH);
+                }
+                else if (USB_PCDC_GET_LINE_CODING == (event_info.setup.request_type & USB_BREQUEST))
+                {
+                    /* Send virtual UART settings back to host */
+                    g_usb_on_usb.periControlDataSet(&g_basic0_ctrl, (uint8_t *) &g_line_coding, LINE_CODING_LENGTH);
+                }
+                else
+                {
+                    /* ACK all other status requests */
+                    g_usb_on_usb.periControlStatusSet(&g_basic0_ctrl, USB_SETUP_STATUS_ACK);
+                }
+                break;
+            case USB_STATUS_SUSPEND:
+            case USB_STATUS_DETACH:
+                break;
+            default:
+                break;
+        }
 
-        setLED(LED_GREEN, LED_OFF);
-        setLED(LED_RED, LED_ON);
-        R_SCI_B_UART_Write(&g_uart0_ctrl, (uint8_t const *)"R-LED\r\n", 7);
-        R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
+        // setLED(LED_GREEN, LED_ON);
+        // R_SCI_B_UART_Write(&g_uart0_ctrl, (uint8_t const *)"G-LED\r\n", 7);
+        // R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
 
-        setLED(LED_RED, LED_OFF);
-        setLED(LED_BLUE, LED_ON);
-        R_SCI_B_UART_Write(&g_uart0_ctrl, (uint8_t const *)"B-LED\r\n", 7);
-        R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
+        // setLED(LED_GREEN, LED_OFF);
+        // setLED(LED_RED, LED_ON);
+        // R_SCI_B_UART_Write(&g_uart0_ctrl, (uint8_t const *)"R-LED\r\n", 7);
+        // R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
 
-        setLED(LED_BLUE, LED_OFF);
-        R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
+        // setLED(LED_RED, LED_OFF);
+        // setLED(LED_BLUE, LED_ON);
+        // R_SCI_B_UART_Write(&g_uart0_ctrl, (uint8_t const *)"B-LED\r\n", 7);
+        // R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
+
+        // setLED(LED_BLUE, LED_OFF);
+        // R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
     }
 
 #if BSP_TZ_SECURE_BUILD
