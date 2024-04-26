@@ -14,7 +14,7 @@
     {
 	    "name": "Debug-RTT-VisionBoard",
 	    "cwd": "${workspaceRoot}",
-	    "executable": "build/RTT_VisonBoard.elf",
+	    "executable": "build/RTT_VisionBoard.elf",
 	    "request": "launch",
 	    "type": "cortex-debug",
 	    // pyocd config

@@ -2,7 +2,7 @@
 
 set(RASC_TARGET_DEVICE R7FA8D1BH)
 set(RASC_TARGET_ARCH cortex-m85)
-set(RASC_PROJECT_NAME RTT_VisonBoard)
+set(RASC_PROJECT_NAME RTT_VisionBoard)
 SET(RASC_TOOLCHAIN_NAME, GCC)
 SET(RASC_CMAKE_CXX_FLAGS "-g -mfloat-abi=hard -O0 -mcpu=cortex-m85 -mfpu=auto -I ${CMAKE_CURRENT_SOURCE_DIR}/ra/arm/CMSIS_5/CMSIS/Core/Include -I ${CMAKE_CURRENT_SOURCE_DIR}/ra/fsp/inc -I ${CMAKE_CURRENT_SOURCE_DIR}/ra/fsp/inc/api -I ${CMAKE_CURRENT_SOURCE_DIR}/ra/fsp/inc/instances -I ${CMAKE_CURRENT_SOURCE_DIR}/ra_cfg/fsp_cfg -I ${CMAKE_CURRENT_SOURCE_DIR}/ra_cfg/fsp_cfg/bsp -I ${CMAKE_CURRENT_SOURCE_DIR}/ra_gen -I ${CMAKE_CURRENT_SOURCE_DIR}/src  -D_RA_CORE=CM85 -D_RA_ORDINAL=1 -D_RENESAS_RA_  -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -mthumb  -std=c99 -MMD -MP -MF <SOURCE>.d -MT <OBJECT>")
 SET(RASC_CMAKE_ASM_FLAGS "-g -mfloat-abi=hard -O0 -mcpu=cortex-m85 -mfpu=auto -I ${CMAKE_CURRENT_SOURCE_DIR}/ra/arm/CMSIS_5/CMSIS/Core/Include -I ${CMAKE_CURRENT_SOURCE_DIR}/ra/fsp/inc -I ${CMAKE_CURRENT_SOURCE_DIR}/ra/fsp/inc/api -I ${CMAKE_CURRENT_SOURCE_DIR}/ra/fsp/inc/instances -I ${CMAKE_CURRENT_SOURCE_DIR}/ra_cfg/fsp_cfg -I ${CMAKE_CURRENT_SOURCE_DIR}/ra_cfg/fsp_cfg/bsp -I ${CMAKE_CURRENT_SOURCE_DIR}/ra_gen -I ${CMAKE_CURRENT_SOURCE_DIR}/src  -D_RA_CORE=CM85 -D_RA_ORDINAL=1 -D_RENESAS_RA_  -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -mthumb   -x assembler-with-cpp -MMD -MP")

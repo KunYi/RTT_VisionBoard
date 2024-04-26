@@ -451,7 +451,7 @@
     <symbolicName propertyId="pa09.symbolic_name" value="SDRAM_SDCLK"/>
     <symbolicName propertyId="pa10.symbolic_name" value="SDRAM_DQM0"/>
     <symbolicName propertyId="pa11.symbolic_name" value="ARDUINO_D5"/>
-    <symbolicName propertyId="pa13.symbolic_name" value="ETH_A_RST"/>
+    <symbolicName propertyId="pa13.symbolic_name" value="USB_CH_SEL"/>
     <symbolicName propertyId="pa14.symbolic_name" value="JLOB_COMS_TX"/>
     <symbolicName propertyId="pa15.symbolic_name" value="JLOB_COMS_RX"/>
     <symbolicName propertyId="pb00.symbolic_name" value="LCD_DATA22"/>

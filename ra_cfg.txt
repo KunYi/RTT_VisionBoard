@@ -313,7 +313,7 @@ FSP Configuration
       PA10 F2 SDRAM_DQM0 SDRAM_DQM0 H None "Peripheral mode" - - "BUS: WR; BUS: WR0; GLCD: LCD_TCON1; IRQ4: IRQ4; SDRAM: DQM0" - IO - - 
       PA11 D4 GPT6_GTIOC6A ARDUINO_D5 L - "Peripheral mode" - - "BUS: BC2; BUS: WR2; GPT6: GTIOC6A; SDRAM: DQM2" - IO - - 
       PA12 D2 - - - - Disabled - - "BUS: D16; GPT6: GTIOC6B; SDRAM: DQ16" - None - - 
-      PA13 E5 GPIO ETH_A_RST H - "Output mode (Initial High)" - - "BUS: D17; SDRAM: DQ17" - IO - - 
+      PA13 E5 GPIO USB_CH_SEL H - "Output mode (Initial High)" - - "BUS: D17; SDRAM: DQ17" - IO - - 
       PA14 C1 - JLOB_COMS_TX - - Disabled - - "BUS: D18; SCI9: TXD9; SDRAM: DQ18" - None - - 
       PA15 F5 - JLOB_COMS_RX - - Disabled - - "BUS: D19; SCI9: RXD9; SDRAM: DQ19" - None - - 
       PB00 L14 - LCD_DATA22 - - Disabled - - "GLCD: LCD_DATA22; SCI1: DE1; SCI1: SCK1; USB HS: USBHS_VBUSEN" - None - - 

@@ -9,6 +9,8 @@ FSP_CPP_FOOTER
 #define LED_RED     LED2
 #define LED_ON      BSP_IO_LEVEL_LOW
 #define LED_OFF     BSP_IO_LEVEL_HIGH
+#define USB_HS_SEL  BSP_IO_LEVEL_HIGH
+#define USB_FS_SEL  BSP_IO_LEVEL_LOW
 
 void setLED(const bsp_io_port_pin_t pin, const bsp_io_level_t state);
 
