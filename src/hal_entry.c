@@ -109,9 +109,10 @@ void hal_entry(void)
     usb_event_info_t event_info;
     usb_status_t     event = USB_STATUS_POWERED;
 
-    /* switch to USB Full speed */
+    /* switch to USB High speed */
+    //g_basic0_cfg.usb_speed = USB_SPEED_HS;
     R_BSP_PinAccessEnable();
-    R_BSP_PinWrite(USB_CH_SEL, USB_FS_SEL);
+    R_BSP_PinWrite(USB_CH_SEL, USB_HS_SEL);
     R_BSP_PinAccessDisable();
     R_BSP_SoftwareDelay(250, BSP_DELAY_UNITS_MILLISECONDS);
 

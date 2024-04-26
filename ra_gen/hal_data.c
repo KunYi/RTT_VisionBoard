@@ -9,8 +9,8 @@ extern usb_descriptor_t g_usb_descriptor;
             const usb_cfg_t g_basic0_cfg =
             {
                 .usb_mode  = USB_MODE_PERI,
-                .usb_speed = USB_SPEED_FS,
-                .module_number = 0,
+                .usb_speed = USB_SPEED_HS,
+                .module_number = 1,
                 .type = USB_CLASS_PCDC,
 #if defined(g_usb_descriptor)
                 .p_usb_reg = g_usb_descriptor,

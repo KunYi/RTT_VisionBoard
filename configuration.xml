@@ -300,8 +300,8 @@
     <module id="module.driver.basic_on_usb.278136512">
       <property id="module.driver.basic.name" value="g_basic0"/>
       <property id="module.driver.usb_basic.usb_mode" value="module.driver.usb_basic.usb_mode.host"/>
-      <property id="module.driver.usb_basic.usb_speed" value="module.driver.usb_basic.usb_speed.fs"/>
-      <property id="module.driver.usb_basic.usb_modulenumber" value="module.driver.usb_basic.usb_modulenumber.0"/>
+      <property id="module.driver.usb_basic.usb_speed" value="module.driver.usb_basic.usb_speed.hs"/>
+      <property id="module.driver.usb_basic.usb_modulenumber" value="module.driver.usb_basic.usb_modulenumber.1"/>
       <property id="module.driver.usb_basic.usb_classtype" value="module.driver.usb_basic.usb_classtype.pcdc"/>
       <property id="module.driver.usb_basic.p_usb_reg" value="g_usb_descriptor"/>
       <property id="module.driver.usb_basic.complience_cb" value="NULL"/>
